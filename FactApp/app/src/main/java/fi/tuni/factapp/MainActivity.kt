@@ -4,14 +4,24 @@ import android.content.ContentValues
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import java.io.BufferedReader
 import java.io.InputStreamReader
 import java.net.HttpURLConnection
 import java.net.URL
+import kotlin.concurrent.thread
 
+@JsonIgnoreProperties(ignoreUnknown = true)
+data class Joke(var item: MutableList<JokeItem>)
+
+@JsonIgnoreProperties(ignoreUnknown = true)
+data class JokeItem(var value: String? = null)
 
 class MainActivity : AppCompatActivity() {
 
@@ -26,10 +36,22 @@ class MainActivity : AppCompatActivity() {
         this.editText = findViewById(R.id.field)
         this.text = findViewById(R.id.text)
         this.button = findViewById(R.id.button)
+        this.data = findViewById(R.id.result)
+        var key = "FU7dCpersox/7huua4T9lg==QJ81ImQfmgxRcYHY"
         var url = "https://api.api-ninjas.com/v1/facts?limit=3"
-        button?.setOnClickListener {
-            getUrl(url)
-        }
+
+        button?.setOnClickListener(object : View.OnClickListener {
+            override fun onClick(p0: View?) {
+                thread() {
+                    val mp = ObjectMapper()
+                    val json: String? = getUrl("https://api.chucknorris.io/jokes/random")
+                    val result: JokeItem? = mp.readValue(json, JokeItem::class.java)
+                    println(result?.value)
+                    runOnUiThread() {data?.text = (result?.value)}
+                }
+            }
+
+        })
     }
 
     override fun onStart() {
@@ -39,7 +61,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        Log.d(ContentValues.TAG, "onResume()")
+
     }
 
     override fun onPause() {
@@ -65,7 +87,7 @@ class MainActivity : AppCompatActivity() {
     fun getUrl(url: String) : String? {
         var result : String? = null
         val sb = StringBuffer()
-        var url = URL("https://api.api-ninjas.com/v1/facts?limit=3")
+        var url = URL(url)
         var urlConnection : HttpURLConnection = url.openConnection() as HttpURLConnection
         urlConnection.setRequestProperty("accept", "application/json")
 
@@ -82,7 +104,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         return result
-        data?.text = result
+
     }
 
 }
