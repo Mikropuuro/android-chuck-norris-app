@@ -16,9 +16,11 @@ import java.io.InputStreamReader
 import java.net.HttpURLConnection
 import java.net.URL
 import kotlin.concurrent.thread
+import kotlin.random.Random
+import kotlin.random.Random.Default.nextInt
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-data class Joke(var item: MutableList<JokeItem>)
+data class Joke(var result: MutableList<JokeItem>? = null)
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class JokeItem(var value: String? = null)
@@ -28,6 +30,7 @@ class MainActivity : AppCompatActivity() {
     var editText : EditText? = null
     var text : TextView? = null
     var button : Button? = null
+    var search : Button? = null
     var data : TextView? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -37,6 +40,7 @@ class MainActivity : AppCompatActivity() {
         this.text = findViewById(R.id.text)
         this.button = findViewById(R.id.button)
         this.data = findViewById(R.id.result)
+        this.search = findViewById(R.id.specific)
         var key = "FU7dCpersox/7huua4T9lg==QJ81ImQfmgxRcYHY"
         var url = "https://api.api-ninjas.com/v1/facts?limit=3"
 
@@ -52,6 +56,28 @@ class MainActivity : AppCompatActivity() {
             }
 
         })
+
+        search?.setOnClickListener(object : View.OnClickListener {
+            override fun onClick(p0: View?) {
+                thread() {
+                    val mp = ObjectMapper()
+                    val query = editText?.getText().toString()
+                    val json: String? = getUrl("https://api.chucknorris.io/jokes/search?query=${query}")
+                    val item: Joke? = mp.readValue(json, Joke::class.java)
+                    val list = item?.result
+                    val rand = list?.size?.let { Random.nextInt(it) }
+
+                    if (list !== null) {
+                        for (item in list) {
+                            runOnUiThread() {data?.text = list[rand!!].value}
+                        }
+                    }
+                    //runOnUiThread() {data?.text = }
+                }
+            }
+
+        })
+
     }
 
     override fun onStart() {
