@@ -38,42 +38,41 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         this.editText = findViewById(R.id.field)
         this.text = findViewById(R.id.text)
-        this.button = findViewById(R.id.button)
         this.data = findViewById(R.id.result)
         this.search = findViewById(R.id.specific)
         var key = "FU7dCpersox/7huua4T9lg==QJ81ImQfmgxRcYHY"
         var url = "https://api.api-ninjas.com/v1/facts?limit=3"
 
-        button?.setOnClickListener(object : View.OnClickListener {
-            override fun onClick(p0: View?) {
-                thread() {
-                    val mp = ObjectMapper()
-                    val json: String? = getUrl("https://api.chucknorris.io/jokes/random")
-                    val result: JokeItem? = mp.readValue(json, JokeItem::class.java)
-                    println(result?.value)
-                    runOnUiThread() {data?.text = (result?.value)}
-                }
-            }
-
-        })
 
         search?.setOnClickListener(object : View.OnClickListener {
             override fun onClick(p0: View?) {
-                thread() {
-                    val mp = ObjectMapper()
-                    val query = editText?.getText().toString()
-                    val json: String? = getUrl("https://api.chucknorris.io/jokes/search?query=${query}")
-                    val item: Joke? = mp.readValue(json, Joke::class.java)
-                    val list = item?.result
-                    val rand = list?.size?.let { Random.nextInt(it) }
-
-                    if (list !== null) {
-                        for (item in list) {
-                            runOnUiThread() {data?.text = list[rand!!].value}
-                        }
+                val query = editText?.getText().toString()
+                if (query == "") {
+                    thread() {
+                        val mp = ObjectMapper()
+                        val json: String? = getUrl("https://api.chucknorris.io/jokes/random")
+                        val result: JokeItem? = mp.readValue(json, JokeItem::class.java)
+                        println(result?.value)
+                        runOnUiThread() {data?.text = (result?.value)}
                     }
-                    //runOnUiThread() {data?.text = }
                 }
+
+                else {
+                    thread() {
+                        val mp = ObjectMapper()
+                        val json: String? = getUrl("https://api.chucknorris.io/jokes/search?query=${query}")
+                        val item: Joke? = mp.readValue(json, Joke::class.java)
+                        val list = item?.result
+                        val rand = list?.size?.let { Random.nextInt(it) }
+                        if (list !== null) {
+                            for (item in list) {
+                                runOnUiThread() {data?.text = list[rand!!].value}
+                            }
+                        }
+
+                    }
+                }
+
             }
 
         })
@@ -87,7 +86,6 @@ class MainActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-
     }
 
     override fun onPause() {
