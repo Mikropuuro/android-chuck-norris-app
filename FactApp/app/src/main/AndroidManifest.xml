@@ -12,6 +12,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.FactApp">
         <activity
+            android:name=".instructions"
+            android:exported="false" />
+        <activity
             android:name=".MainActivity"
             android:exported="true">
             <intent-filter>
