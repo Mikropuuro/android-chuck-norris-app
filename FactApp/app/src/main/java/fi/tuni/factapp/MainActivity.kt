@@ -63,11 +63,15 @@ class MainActivity : AppCompatActivity() {
                         val json: String? = getUrl("https://api.chucknorris.io/jokes/search?query=${query}")
                         val item: Joke? = mp.readValue(json, Joke::class.java)
                         val list = item?.result
-                        val rand = list?.size?.let { Random.nextInt(it) }
-                        if (list !== null) {
-                            for (item in list) {
-                                runOnUiThread() {data?.text = list[rand!!].value}
+                        val rand = list?.size?.let { Random.nextInt(it + 1) }
+                        if (list?.isEmpty() !== true) {
+                            if (list != null) {
+                                for (item in list) {
+                                    runOnUiThread() {data?.text = list[rand!!].value}
+                                }
                             }
+                        } else {
+                            runOnUiThread() {data?.text = "No jokes found with this keyword :("}
                         }
 
                     }
