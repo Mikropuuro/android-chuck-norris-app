@@ -2,6 +2,7 @@ package fi.tuni.factapp
 
 import android.content.ContentValues
 import android.content.Intent
+import android.graphics.Color
 import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
@@ -120,6 +121,7 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
 
     override fun onDestroy() {
         super.onDestroy()
+        sensorManager.unregisterListener(this)
         Log.d(ContentValues.TAG, "onDestroy()")
     }
 
@@ -156,11 +158,13 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
             val sides = event.values[0]
             val upDown = event.values[1]
 
+            val color = if (upDown.toInt() == 0 && sides.toInt() == 0) Color.GREEN else Color.RED
+            text?.setTextColor(color)
         }
     }
 
     override fun onAccuracyChanged(p0: Sensor?, p1: Int) {
-        TODO("Not yet implemented")
+        return
     }
 
 }
