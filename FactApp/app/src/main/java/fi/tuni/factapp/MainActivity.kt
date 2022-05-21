@@ -33,11 +33,11 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
 
     private lateinit var sensorManager: SensorManager
 
-    var editText : EditText? = null
-    var text : TextView? = null
-    var button : Button? = null
-    var search : Button? = null
-    var data : TextView? = null
+    var editText : EditText? = null //The textfield user can use to search jokes with a keyword
+    var text : TextView? = null //Displays the name of the app. Also changes color depending on the device's position
+    var button : Button? = null //Button used to get to the instructions-page
+    var search : Button? = null //Button used to search jokes
+    var data : TextView? = null //Displays the jokes
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -129,6 +129,23 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
         super.onRestart()
         Log.d(ContentValues.TAG, "onRestart()")
     }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        var saved = data?.text.toString()
+        outState.putString("keyd", saved)
+        super.onSaveInstanceState(outState)
+    }
+
+    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+        super.onRestoreInstanceState(savedInstanceState)
+        val strValue : String? = savedInstanceState.getString("keyd")
+        if (strValue !== null) {
+            data?.text = strValue
+        }
+    }
+
+
+
 
     fun getUrl(url: String) : String? {
         var result : String? = null
