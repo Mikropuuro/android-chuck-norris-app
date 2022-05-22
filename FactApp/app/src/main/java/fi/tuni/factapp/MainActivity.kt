@@ -9,6 +9,7 @@ import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.text.Editable
 import android.util.Log
 import android.widget.Button
 import android.widget.EditText
@@ -23,10 +24,10 @@ import kotlin.concurrent.thread
 import kotlin.random.Random
 
 
-@JsonIgnoreProperties(ignoreUnknown = true)
+@JsonIgnoreProperties(ignoreUnknown = true) //this data class holds all the results when searching a joke
 data class Joke(var result: MutableList<JokeItem>? = null)
 
-@JsonIgnoreProperties(ignoreUnknown = true)
+@JsonIgnoreProperties(ignoreUnknown = true) //this data class holds one joke item from the data class above
 data class JokeItem(var value: String? = null)
 
 class MainActivity : AppCompatActivity(), SensorEventListener {
@@ -49,12 +50,14 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
         this.search = findViewById(R.id.specific)
         this.button = findViewById(R.id.change)
 
+        //opens the instructions-page
         button?.setOnClickListener {
             val intent = Intent(this, instructions::class.java)
             startActivity(intent)
         }
 
 
+        //searches the joke. if the text field is empty, it will fetch a random joke. if user has given a keyword in the textfield, it picks a random joke from the results
         search?.setOnClickListener {
             val query = editText?.getText().toString()
             if (query == "") {
@@ -80,25 +83,15 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
                             }
                         }
                     } else {
-                        runOnUiThread() { data?.text = "No jokes found with this keyword :(" }
+                        runOnUiThread() {
+                            data?.text = "No jokes found with this keyword :("
+                        }
                     }
-
                 }
             }
         }
-
     }
 
-    private fun sensorStuff() {
-        sensorManager = getSystemService(SENSOR_SERVICE) as SensorManager
-
-        sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)?.also {
-            sensorManager.registerListener(this,
-                it,
-                SensorManager.SENSOR_DELAY_FASTEST,
-                SensorManager.SENSOR_DELAY_FASTEST)
-        }
-    }
 
     override fun onStart() {
         super.onStart()
@@ -107,6 +100,7 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
 
     override fun onResume() {
         super.onResume()
+        Log.d(ContentValues.TAG, "onResume()")
     }
 
     override fun onPause() {
@@ -130,23 +124,28 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
         Log.d(ContentValues.TAG, "onRestart()")
     }
 
+    //saves the joke on the screen and keyword in the textfield
     override fun onSaveInstanceState(outState: Bundle) {
+        var field = editText?.text
         var saved = data?.text.toString()
         outState.putString("keyd", saved)
+        outState.putString("field", field.toString())
         super.onSaveInstanceState(outState)
     }
 
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
         val strValue : String? = savedInstanceState.getString("keyd")
+        val fieldValue = savedInstanceState.getString("field")
         if (strValue !== null) {
             data?.text = strValue
         }
+        if (fieldValue !== null) {
+            editText?.setText(fieldValue)
+        }
     }
 
-
-
-
+    //connects to the API and returns json
     fun getUrl(url: String) : String? {
         var result : String? = null
         val sb = StringBuffer()
@@ -170,6 +169,19 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
 
     }
 
+    //sets up a sensor listener
+    private fun sensorStuff() {
+        sensorManager = getSystemService(SENSOR_SERVICE) as SensorManager
+
+        sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)?.also {
+            sensorManager.registerListener(this,
+                it,
+                SensorManager.SENSOR_DELAY_FASTEST,
+                SensorManager.SENSOR_DELAY_FASTEST)
+        }
+    }
+
+    //retrieves the information from the sensor and changes the color of the big heading text
     override fun onSensorChanged(event: SensorEvent?) {
         if (event?.sensor?.type == Sensor.TYPE_ACCELEROMETER) {
             val sides = event.values[0]
