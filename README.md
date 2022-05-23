@@ -7,3 +7,5 @@ Present topic: Due to the random fact api not working, I decided to change the a
 Target: Android / Kotlin
 
 Used API: https://api.chucknorris.io/
+
+Link to screencast: https://youtu.be/LmwaMzIEZrY
