@@ -8,9 +8,9 @@ import android.widget.TextView
 
 class instructions : AppCompatActivity() {
 
-    var text : TextView? = null
-    var instructions : TextView? = null
-    var button : Button? = null
+    var text : TextView? = null //Displays the name of the app
+    var instructions : TextView? = null //Displays the insturctions
+    var button : Button? = null //Button used to navigate to the main screen
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -20,6 +20,7 @@ class instructions : AppCompatActivity() {
         this.instructions = findViewById(R.id.instructions)
         instructions?.text = "This app provides your daily Chuck Norris-joke needs. You can either search for joke by using a keyword or search a random joke by not writing anything on the text field provided."
 
+        //navigates back to the main activity
         button?.setOnClickListener {
             val intent = Intent(this, MainActivity::class.java)
             startActivity(intent)

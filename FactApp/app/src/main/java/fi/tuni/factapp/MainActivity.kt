@@ -124,7 +124,7 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
         Log.d(ContentValues.TAG, "onRestart()")
     }
 
-    //saves the joke on the screen and keyword in the textfield
+    //saves the joke on the screen and keyword on the textfield
     override fun onSaveInstanceState(outState: Bundle) {
         var field = editText?.text
         var saved = data?.text.toString()
